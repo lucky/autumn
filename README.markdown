@@ -34,7 +34,7 @@ We setup our objects like so:
     from autumn.db.relations import ForeignKey, OneToMany
     import datetime
 
-    db.connect('mysql', user='root', db='superjared')
+    db.connect('mysql', user='root', db='mydatabase')
 
     class Author(Model):
         books = OneToMany('Book')
