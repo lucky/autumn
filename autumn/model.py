@@ -160,10 +160,6 @@ class Model(object):
         self.__dict__[name] = value
         
     def _get_pk(self):
-        'Returns value of primary key'
-        return getattr(self, self.Meta.pk)
-        
-    def _get_pk(self):
         'Sets the current value of the primary key'
         return getattr(self, self.Meta.pk, None)
 
@@ -187,15 +183,19 @@ class Model(object):
         # if pk field is set, we want to insert it too
         # if pk field is None, we want to auto-create it from lastrowid
         auto_pk = 1 and (self._get_pk() is None) or 0
-        query = 'INSERT INTO %s (%s) VALUES (%s)' % (self.Meta.table_safe, 
-                ', '.join([escape(f) for f in self._fields
-                if f != self.Meta.pk or not auto_pk]),
-                ', '.join([self.db.conn.placeholder] * (len(self._fields) - auto_pk)))
+        fields=[
+            escape(f) for f in self._fields 
+            if f != self.Meta.pk or not auto_pk
+        ]
+        query = 'INSERT INTO %s (%s) VALUES (%s)' % (
+               self.Meta.table_safe,
+               ', '.join(fields),
+               ', '.join([self.db.conn.placeholder] * len(fields) )
+        )
         values = [getattr(self, f, None) for f in self._fields
-                if f != self.Meta.pk or not auto_pk]
+               if f != self.Meta.pk or not auto_pk]
         cursor = Query.raw_sql(query, values, self.db)
-        
-        
+       
         if self._get_pk() is None:
             self._set_pk(cursor.lastrowid)
         return True

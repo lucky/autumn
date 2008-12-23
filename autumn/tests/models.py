@@ -5,7 +5,7 @@ from autumn import validators
 import datetime
 
 #autumn_db.conn.connect('sqlite3', '/tmp/example.db')
-autumn_db.conn.connect('mysql', user='root', db='superjared')
+autumn_db.conn.connect('mysql', user='root', db='autumn')
     
 class Author(Model):
     books = OneToMany('Book')
